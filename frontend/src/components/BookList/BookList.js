@@ -1,6 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
-import { BsBookmarkStar, BsBookmarkStarFill } from "react-icons/bs";
-import { deleteBook, toggleFavorite } from "../../redux/books/actionCreators";
+import { BsBookmarkStarFill, BsBookmarkStar } from "react-icons/bs";
+import {
+  deleteBook,
+  toggleFavorite,
+  selectBooks,
+} from "../../redux/slices/booksSlice";
 import {
   selectTitleFilter,
   selectAuthorFilter,
@@ -8,20 +12,20 @@ import {
 } from "../../redux/slices/filterSlice";
 import "./BookList.css";
 
-function BookList() {
-  const books = useSelector((state) => state.books);
+const BookList = () => {
+  const books = useSelector(selectBooks);
   const titleFilter = useSelector(selectTitleFilter);
   const authorFilter = useSelector(selectAuthorFilter);
   const onlyFavoriteFilter = useSelector(selectOnlyFavoriteFilter);
   const dispatch = useDispatch();
 
-  function handleDeleteBook(id) {
+  const handleDeleteBook = (id) => {
     dispatch(deleteBook(id));
-  }
+  };
 
-  function handleToggleFavorite(id) {
+  const handleToggleFavorite = (id) => {
     dispatch(toggleFavorite(id));
-  }
+  };
 
   const filteredBooks = books.filter((book) => {
     const matchesTitle = book.title
@@ -38,6 +42,7 @@ function BookList() {
     if (!filter) return text;
 
     const regex = new RegExp(`(${filter})`, "gi");
+
     return text.split(regex).map((substring, i) => {
       if (substring.toLowerCase() === filter.toLowerCase()) {
         return (
@@ -54,13 +59,13 @@ function BookList() {
     <div className="app-block book-list">
       <h2>Book List</h2>
       {books.length === 0 ? (
-        <p>No books avaliable</p>
+        <p>No books available</p>
       ) : (
         <ul>
-          {filteredBooks.map((book, index) => (
+          {filteredBooks.map((book, i) => (
             <li key={book.id}>
               <div className="book-info">
-                {++index}. {highlightMatch(book.title, titleFilter)} by{" "}
+                {++i}. {highlightMatch(book.title, titleFilter)} by{" "}
                 <strong>{highlightMatch(book.author, authorFilter)}</strong> (
                 {book.source})
               </div>
@@ -72,7 +77,6 @@ function BookList() {
                     <BsBookmarkStar className="star-icon" />
                   )}
                 </span>
-
                 <button onClick={() => handleDeleteBook(book.id)}>
                   Delete
                 </button>
@@ -83,6 +87,6 @@ function BookList() {
       )}
     </div>
   );
-}
+};
 
 export default BookList;
